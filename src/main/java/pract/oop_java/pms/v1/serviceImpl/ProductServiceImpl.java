@@ -17,28 +17,28 @@ import pract.oop_java.pms.v1.utils.ExceptionUtils;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
 @AllArgsConstructor
 public class ProductServiceImpl implements ProductService {
+
     private  final ProductRepository productRepository;
     private final FileRepository fileRepository;
 //    private  final FileServiceImpl fileService ;
 
     @Override
     public Product createProduct(CreateProductDTO productDTO , File file) {
-
         try {
             File fileService = fileRepository.save(file);
-
-            Product existingProduct = this.getProductByCode(productDTO.getCode());
-            if (existingProduct != null) throw new BadRequestException("A product with this code already exists!");
+            Optional<Product> existingProduct = productRepository.findByProductCode(productDTO.getCode());
+            if (existingProduct.isPresent()) throw new BadRequestException("A product with this code already exists!");
             Product productEntity = new Product();
-            productEntity.setCode(productDTO.getCode());
             productEntity.setDate(new Date());
             productEntity.setName(productDTO.getName());
             productEntity.setType(productDTO.getType());
+            productEntity.setProductCode(productDTO.getCode());
             productEntity.setPath(file);
             productEntity.setPrice(productDTO.getPrice());
 
@@ -117,7 +117,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Product getProductByCode(String code) {
         try {
-            return productRepository.getByCode(code);
+            return productRepository.findByProductCode(code).orElseThrow(()-> new NotFoundException("The product with the given code was not found"));
         } catch (Exception e) {
             ExceptionUtils.handleServiceExceptions(e);
             return null;
@@ -127,7 +127,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Product findProductByCode(String code) {
         try {
-            return productRepository.findByCode(code)
+            return productRepository.findByProductCode(code)
                     .orElseThrow(() -> new ResourceNotFoundException("Product with code " + code + " not found"));
         }catch (Exception e) {
             ExceptionUtils.handleServiceExceptions(e);

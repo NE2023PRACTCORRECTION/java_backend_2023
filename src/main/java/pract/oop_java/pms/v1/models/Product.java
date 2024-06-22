@@ -7,6 +7,7 @@ import pract.oop_java.pms.v1.fileHandling.File;
 import javax.persistence.*;
 import java.util.Date;
 import java.util.UUID;
+import java.util.Set;
 
 @Entity
 @AllArgsConstructor
@@ -19,10 +20,12 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-    private String code;
+    @Column(unique = true)
+    private  String productCode ;
+
 
     private String type;
-    private String price;
+    private float price;
     private Date date;
     private String name;
     @OneToOne

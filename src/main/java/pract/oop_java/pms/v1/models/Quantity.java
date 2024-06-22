@@ -1,15 +1,11 @@
 package pract.oop_java.pms.v1.models;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.Date;
 import java.util.UUID;
 
@@ -24,11 +20,13 @@ public class Quantity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID uuid;
 
+    @OneToOne
+    private Product products;
 
-    private  String productCode ;
-    private  String quantity;
+    private  float quantity;
+
     private  String operation;
-    private Date date;
 
+    private Date date;
 
 }

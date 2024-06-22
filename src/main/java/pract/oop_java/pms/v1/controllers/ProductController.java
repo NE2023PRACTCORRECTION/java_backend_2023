@@ -50,7 +50,6 @@ public class ProductController {
             e.printStackTrace();
             return ExceptionUtils.handleControllerExceptions(e);
         }
-
     }
 
     /**

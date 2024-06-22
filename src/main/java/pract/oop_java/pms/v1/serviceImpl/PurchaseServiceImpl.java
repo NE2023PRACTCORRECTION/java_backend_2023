@@ -10,6 +10,7 @@ import pract.oop_java.pms.v1.models.Product;
 import pract.oop_java.pms.v1.models.Purchase;
 import pract.oop_java.pms.v1.repositories.ProductRepository;
 import pract.oop_java.pms.v1.repositories.PurchaseRepository;
+import pract.oop_java.pms.v1.services.ProductService;
 import pract.oop_java.pms.v1.services.PurchaseService;
 import pract.oop_java.pms.v1.utils.ExceptionUtils;
 
@@ -20,18 +21,20 @@ import java.util.UUID;
 @AllArgsConstructor
 public class PurchaseServiceImpl implements PurchaseService {
     private  final PurchaseRepository purchaseRepository;
-    private  final ProductRepository productRepository;
+    private  final ProductService productService;
     @Override
     public Purchase createPurchase(CreatePurchaseDTO purchaseDTO) {
 
         try {
-            Purchase existingPurchase = this.getPurchaseByproduct_code(purchaseDTO.getProductCode());
-            if (existingPurchase != null) throw new BadRequestException("A product with this code already exists!");
+            Product product = productService.getProductByCode(purchaseDTO.getProductCode());
+            float total = product.getPrice() * purchaseDTO.getQuantity();
             Purchase purchaseEntity = new Purchase();
             purchaseEntity.setDate(purchaseDTO.getDate());
-            purchaseEntity.setTotal(purchaseDTO.getTotal());
+            purchaseEntity.setTotal(
+                    total
+            );
             purchaseEntity.setQuantity(purchaseDTO.getQuantity());
-            purchaseEntity.setProductCode(purchaseDTO.getProductCode());
+            purchaseEntity.setProductCode(product);
             return  purchaseRepository.save(purchaseEntity);
         }catch (Exception e) {
             ExceptionUtils.handleServiceExceptions(e);
@@ -44,8 +47,11 @@ public class PurchaseServiceImpl implements PurchaseService {
     public List<Purchase> getAllPurchases() {
 
         try {
-          return   purchaseRepository.findAll();
-
+           List<Purchase> purchases =  purchaseRepository.findAll();
+           purchases.forEach(p -> p.setTotal(
+                   p.getProductCode().getPrice() * p.getQuantity()
+           ));
+           return purchases;
         }catch (Exception e) {
             ExceptionUtils.handleServiceExceptions(e);
         }
@@ -71,14 +77,16 @@ public class PurchaseServiceImpl implements PurchaseService {
     @Override
     public Purchase updatePurchase(CreatePurchaseDTO purchaseDTO, UUID id) {
         try {
+            Product product = productService.getProductByCode(purchaseDTO.getProductCode());
+            float total = product.getPrice() * purchaseDTO.getQuantity();
             Purchase purchase = purchaseRepository.findById(id)
                     .orElseThrow(() -> new NotFoundException("The purchase with the given id was not found"));
 
             Purchase purchaseEntity = new Purchase();
             purchaseEntity.setDate(purchaseDTO.getDate());
-            purchaseEntity.setTotal(purchaseDTO.getTotal());
+            purchaseEntity.setTotal(total);
             purchaseEntity.setQuantity(purchaseDTO.getQuantity());
-            purchaseEntity.setProductCode(purchaseDTO.getProductCode());
+            purchaseEntity.setProductCode(product);
             return purchaseRepository.save(purchaseEntity);
         }catch (Exception e){
             ExceptionUtils.handleServiceExceptions(e);

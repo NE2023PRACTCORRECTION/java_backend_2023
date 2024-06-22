@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.UUID;
 
 @Setter
 @Getter
@@ -13,8 +14,8 @@ import java.util.Date;
 @NoArgsConstructor
 public class CreateQuantityDTO {
 
-    private  String productCode ;
-    private  String quantity;
+    private String productCode;
+    private  float quantity;
     private  String operation;
     private Date date;
 

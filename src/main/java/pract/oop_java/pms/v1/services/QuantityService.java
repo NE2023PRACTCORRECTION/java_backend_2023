@@ -20,7 +20,7 @@ public interface QuantityService {
 
     Quantity deleteQuantityById(UUID id);
 
-    Quantity getQuantityByproductCode(String code);
+    Quantity getQuantityByproductCode(Product product);
 
     Quantity findQuantityByProductCode(String code);
 }

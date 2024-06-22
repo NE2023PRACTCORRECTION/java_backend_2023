@@ -15,6 +15,6 @@ public class CreateProductDTO {
 
     private String code;
     private String type;
-    private String price;
+    private float price;
     private String name;
 }

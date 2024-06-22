@@ -6,10 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.Date;
 import java.util.UUID;
 
@@ -23,8 +20,14 @@ public class Purchase {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-    private  String productCode ;
-    private  String quantity;
-    private  String total;
+    @ManyToOne()
+    @JoinColumn(name = "productId")
+    private  Product productCode ;
+
+    private  float quantity;
+
+    @Transient
+    private  float total;
+
     private Date date;
 }
